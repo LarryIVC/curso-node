@@ -1,4 +1,4 @@
-const path = require('node:path');
+const path = require('node:path')
 // barra separadora de directorios
 console.log(path.sep)
 

@@ -1,13 +1,12 @@
 const fs = require('node:fs/promises')
 
-async function init() {
+async function init () {
   console.log('Leyendo el primer archivo...\n')
 
   // const text = fs.readFileSync('./archivo.txt', 'utf-8')
   const data = await fs.readFile('./archivo.txt', 'utf-8')
 
   console.log('Primer texto: ', data, '\n')
-
 
   // console.log(text)
 
@@ -23,8 +22,7 @@ async function init() {
 
 init()
 
-
-//IIFE (Immediately Invoked Function Expression)
+// IIFE (Immediately Invoked Function Expression)
 // ; (
 //   async () => {
 //     console.log('Leyendo el primer archivo...\n')
@@ -33,7 +31,6 @@ init()
 //     const data = await fs.readFile('./archivo.txt', 'utf-8')
 
 //     console.log('Primer texto: ', data, '\n')
-
 
 //     // console.log(text)
 
@@ -48,7 +45,5 @@ init()
 
 //   }
 // )
-
-
 
 // console.log(text2)

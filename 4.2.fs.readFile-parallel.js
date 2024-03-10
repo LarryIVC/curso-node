@@ -8,4 +8,3 @@ Promise.all([
     console.log('Primer texto: ', data, '\n')
     console.log('Segundo texto:', secondData, '\n')
   })
-
