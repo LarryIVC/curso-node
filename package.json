@@ -1,11 +1,18 @@
 {
-  "dependencies": {
-    "picocolors": "^1.0.0"
-  },
+  "name": "cursonode",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "devDependencies": {
-    "standard": "^17.1.0"
+    "standard": "17.1.0"
   },
   "eslintConfig": {
     "extends": "standard"
-  }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
