@@ -39,9 +39,9 @@ const processRequest = (req, res) => {
           })
 
           req.on('end', () => {
-            console.log('body', body)
+            // console.log('body', body)
             const data = JSON.parse(body)
-            res.writeHead(201, { 'Content-Type': 'application/json; charset=utf-8' })
+            res.writeHead(201, { 'Content-Type': 'appliation/json; charset=utf-8' })
             data.timestamp = new Date().toISOString()
             res.end(JSON.stringify(data))
           })
