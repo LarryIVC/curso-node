@@ -1,0 +1,26 @@
+### get
+GET http://localhost:1234
+
+### about
+GET http://localhost:1234/about
+
+### 404
+GET http://localhost:1234/badrequest
+
+### POST
+POST http://localhost:1234
+
+### POST with vsconfig
+POST http://localhost:1234/vsconfig
+Content-Type: application/json
+
+{
+  "name": "vsconfig",
+  "value": "config"
+}
+
+### GET
+GET http://localhost:1234/
+
+### GET
+GET http://localhost:1234/1234
