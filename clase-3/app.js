@@ -1,10 +1,11 @@
 const express = require('express')
 const movies = require('./movies.json')
+const cors = require('cors')
 const { validateMovie, validatePartialMovie } = require('./validate.js')
 
 const ACCEPTED_ORIGINS = [
   'http://localhost:8080',
-  'http://localhost:1234',
+  // 'http://localhost:1234/', ===> no responde a solicitud de su mismo origen
   'https://movies.com',
   'https://my-app.com'
 ]
@@ -13,6 +14,19 @@ app.disable('x-powered-by')
 const PORT = process.env.PORT || 1234
 
 app.use(express.json())
+app.use(cors({
+  origin: (origin, callback) => {
+    if (ACCEPTED_ORIGINS.includes(origin)) {
+      callback(null, true)
+    }
+
+    if (!origin) { // en el caso de que se pruebe desde el mismo origen (localhost:1234)
+      callback(null, true)
+    }
+
+    callback(new Error('Not allowed by CORS'))
+  }
+}))
 
 app.get('/', (req, res) => {
   res.send('<h1>Hola mundo</h1>')
@@ -20,10 +34,12 @@ app.get('/', (req, res) => {
 // all movies
 app.get('/movies', (req, res) => {
   // res.header('Access-Control-Allow-Origin', '*')
-  const origin = req.header('origin')
-  if (ACCEPTED_ORIGINS.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin)
-  }
+
+  // sin la dependencia cors
+  // const origin = req.header('origin')
+  // if (ACCEPTED_ORIGINS.includes(origin)) {
+  //   res.header('Access-Control-Allow-Origin', origin)
+  // }
 
   // by genre
   const { genre } = req.query
@@ -101,6 +117,34 @@ app.patch('/movies/:id', (req, res) => {
   movies[movieIndex] = updatedMovie
   res.json(updatedMovie)
 })
+
+app.delete('/movies/:id', (req, res) => {
+  // sin la dependencia cors
+  // const origin = req.header('origin')
+  // if (ACCEPTED_ORIGINS.includes(origin)) {
+  //   res.header('Access-Control-Allow-Origin', origin)
+  // }
+
+  const { id } = req.params
+  const movieIndex = movies.findIndex(movie => movie.id === id)
+  if (movieIndex === -1) {
+    return res.status(404).json({ error: 'Movie not found' })
+  }
+  movies.splice(movieIndex, 1)
+  res.status(204)
+  return res.json({ message: 'Movie deleted' })
+})
+
+// sin la dependencia cors
+// app.options('/movies/:id', (req, res) => {
+//   const origin = req.header('origin')
+//   if (ACCEPTED_ORIGINS.includes(origin)) {
+//     res.header('Access-Control-Allow-Origin', origin)
+//   }
+//   res.header('Access-Control-Allow-Methods', 'DELETE, PATCH')
+//   res.header('Access-Control-Allow-Headers', 'Content-Type')
+//   res.send(200)
+// })
 
 // search all movies by genre
 app.listen(PORT, () => {
