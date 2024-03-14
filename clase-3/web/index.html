@@ -26,14 +26,33 @@
       .then(movies => {
         const html = movies.map(movie => {
           return `
-            <article>
+            <article data-id="${movie.id}" >
               <h2>${movie.title}</h2>
               <img src="${movie.poster}" alt="${movie.title}">
               <p>${movie.director}</p>
-              </article>
+              <button>Delete</button>
+            </article>
+
           `
         }).join('')
         document.querySelector('main').innerHTML = html        
+        document.addEventListener('click', event => {
+          if (event.target.matches('button')) {
+            const article = event.target.closest('article')
+            console.log(article.dataset)
+            const id = article.dataset.id
+            fetch(`http://localhost:1234/movies/${id}`, {
+              method: 'DELETE'
+            })
+              .then(response => {
+                console.log(response)
+                if(response.ok){
+                  article.remove()
+                }
+              })
+              .catch(error => console.log("este error", error))
+          }
+        })
       })
       .catch(error => console.log(error));
   </script>
