@@ -27,7 +27,7 @@ Content-Type: application/json
 }
 
 ### Update movie
-PATCH http://localhost:1234/movies/6a360a18-c645-4b47-9a7b-2a71babbf3e0
+PATCH http://localhost:1234/movies/6a360a18-c645-4b47-9a7b-2a71babbf3e01
 Content-Type: application/json
 
 {
@@ -35,4 +35,8 @@ Content-Type: application/json
     "title": "The Avatar",
     "duration": 120
 }
+
+### Delete movie
+DELETE http://localhost:1234/movies/6a360a18-c645-4b47-9a7b-2a71babbf3e0a
+
 
