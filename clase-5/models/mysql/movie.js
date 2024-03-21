@@ -95,26 +95,54 @@ export class MovieModel {
   }
 
   static async update ({ id, input }) {
-    
-    // const movieIndex = movies.findIndex(movie => movie.id === id)
-    // if (movieIndex === -1) {
-    //   return false
-    // }
-
-    // const updatedMovie = {
-    //   ...movies[movieIndex],
-    //   ...input
-    // }
-    // movies[movieIndex] = updatedMovie
-    // return updatedMovie
+    if (!id) return null
+    if (!input) return null
+    const {
+      genre: genreInput,
+      title,
+      year,
+      director,
+      duration,
+      poster,
+      rate
+    } = input
+    try {
+      const [result] = await pool.query('UPDATE movie SET title = IFNULL(?, title), year = IFNULL(?, year), director = IFNULL(?, director), duration = IFNULL(?, duration), poster = IFNULL(?, poster), rate = IFNULL(?, rate) WHERE id = UUID_TO_BIN(?)', [title, year, director, duration, poster, rate, id])
+      if (result.affectedRows <= 0) return null
+      if (genreInput) {
+        await pool.query('DELETE FROM movie_genres WHERE movie_id = UUID_TO_BIN(?)', [id])
+        genreInput.forEach(async g => {
+          const [rowId] = await pool.query('SELECT id genId FROM genre WHERE LOWER(name) = ?', [g.toLowerCase()])
+          const [{ genId }] = rowId
+          await pool.query('INSERT INTO movie_genres (movie_id, genre_id) VALUES (UUID_TO_BIN(?), ?)', [id, genId])
+        })
+      }
+      const [movie] = await pool.query('SELECT BIN_TO_UUID(id) AS id, title, year, director, duration, poster, rate FROM movie WHERE id = UUID_TO_BIN(?)', [id])
+      const [genres] = await pool.query(
+        `select g.name from genre g 
+        join movie_genres mg on g.id = mg.genre_id 
+        join movie m on m.id = mg.movie_id 
+        WHERE m.id = UUID_TO_BIN(?)`, [id])
+      movie[0].genre = genres.map(g => g.name)
+      return movie[0]
+    } catch (error) {
+      console.error('Cant update movie', error)
+      return null
+    }
   }
 
-  // static async delete ({ id }) {
-  //   const movieIndex = movies.findIndex(movie => movie.id === id)
-  //   if (movieIndex === -1) {
-  //     return false
-  //   }
-  //   movies.splice(movieIndex, 1)
-  //   return true
-  // }
+  static async delete ({ id }) {
+    if (!id) return false
+    try {
+      await pool.query('DELETE FROM movie_genres WHERE movie_id = UUID_TO_BIN(?)', [id])
+
+      const [result] = await pool.query('DELETE FROM movie WHERE id = UUID_TO_BIN(?)', [id])
+      if (result.affectedRows <= 0) return null
+
+      return result.affectedRows
+    } catch (error) {
+      console.error('Cant delete movie', error)
+      return false
+    }
+  }
 }
