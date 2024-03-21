@@ -1,18 +1,17 @@
-### all movies
-GET http://localhost:1234/movies
+
 
 ### single movie
 
-GET http://localhost:1234/movies/814cc1e0-e324-11ee-a74c-bc5ff4400066
+GET http://localhost:1234/api/v1/movies/0f899cdf-e6d8-11ee-a74c-bc5ff4400066
 
 ###
 #  GET http://localhost:1234/movies/6a360a18-c645-4b47-9a7b-2a71babbf3e0
 
 ### Search by genre
-GET http://localhost:1234/movies?genre=ACTION
+GET http://localhost:1234/api/v1/movies?genre=ACTION
 
 ### New movie
-POST http://localhost:1234/movies
+POST http://localhost:1234/api/v1/movies
 Content-Type: application/json
 
 {
@@ -31,16 +30,23 @@ Content-Type: application/json
 }
 
 ### Update movie
-PATCH http://localhost:1234/movies/6a360a18-c645-4b47-9a7b-2a71babbf3e01
+PATCH http://localhost:1234/api/v1/movies/0f899cdf-e6d8-11ee-a74c-bc5ff4400066
 Content-Type: application/json
 
 {
-    "year": 2000,
-    "title": "The Avatar",
-    "duration": 120
+    "year": 2023,
+    "title": "The Marvels",
+    "duration": 105,
+    "genre": [
+        "Action",
+        "Adventure",
+        "Sci-Fi"
+    ]
 }
 
 ### Delete movie
-DELETE http://localhost:1234/movies/6a360a18-c645-4b47-9a7b-2a71babbf3e0a
+DELETE http://localhost:1234/api/v1/movies/b81c839d-e3e6-11ee-a74c-bc5ff4400066
 
 
+### all movies
+GET http://localhost:1234/api/v1/movies
