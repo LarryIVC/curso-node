@@ -23,6 +23,17 @@ export class MovieModel {
           JOIN genre ON movie_genres.genre_id = genre.id 
           WHERE LOWER(genre.name) = ?`, [lowerGenre])
         if (rows.length === 0) return []
+        // let genres = []
+        // rows.map(async (row, index) => {
+        //   console.log(row)
+        //   const [rowGenres] = await pool.query(
+        //     `select g.name from genre g
+        //     join movie_genres mg on g.id = mg.genre_id
+        //     join movie m on m.id = mg.movie_id
+        //     WHERE m.id = UUID_TO_BIN(?)`, [row.id])
+        //   // rows[row.id].genre = rowGenres.map(g => g.name)
+        //   console.log(rowGenres)
+        // })
         return rows
       } catch (error) {
         console.error(error)
@@ -34,6 +45,8 @@ export class MovieModel {
       const [rows] = await pool.query(
         `SELECT BIN_TO_UUID(id) AS id, title, year, director, duration, poster, rate 
         FROM movie`)
+      // console.log(rows)
+
       return rows
     } catch (error) {
       console.error(error)
