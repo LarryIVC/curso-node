@@ -23,18 +23,17 @@ export class MovieModel {
           JOIN genre ON movie_genres.genre_id = genre.id 
           WHERE LOWER(genre.name) = ?`, [lowerGenre])
         if (rows.length === 0) return []
-        // let genres = []
-        // rows.map(async (row, index) => {
-        //   console.log(row)
-        //   const [rowGenres] = await pool.query(
-        //     `select g.name from genre g
-        //     join movie_genres mg on g.id = mg.genre_id
-        //     join movie m on m.id = mg.movie_id
-        //     WHERE m.id = UUID_TO_BIN(?)`, [row.id])
-        //   // rows[row.id].genre = rowGenres.map(g => g.name)
-        //   console.log(rowGenres)
-        // })
-        return rows
+        const newMovies = await Promise.all(rows.map(async (row) => {
+          const [rowGenres] = await pool.query(
+            `select g.name from genre g
+            join movie_genres mg on g.id = mg.genre_id
+            join movie m on m.id = mg.movie_id
+            WHERE m.id = UUID_TO_BIN(?)`, [row.id])
+          const genres = rowGenres.map(g => g.name)
+          return { ...row, genre: genres }
+        }))
+        // console.log('new', newMovies)
+        return newMovies
       } catch (error) {
         console.error(error)
         return []
@@ -45,9 +44,17 @@ export class MovieModel {
       const [rows] = await pool.query(
         `SELECT BIN_TO_UUID(id) AS id, title, year, director, duration, poster, rate 
         FROM movie`)
-      // console.log(rows)
+      const newMovies = await Promise.all(rows.map(async (row) => {
+        const [rowGenres] = await pool.query(
+            `select g.name from genre g
+            join movie_genres mg on g.id = mg.genre_id
+            join movie m on m.id = mg.movie_id
+            WHERE m.id = UUID_TO_BIN(?)`, [row.id])
+        const genres = rowGenres.map(g => g.name)
+        return { ...row, genre: genres }
+      }))
 
-      return rows
+      return newMovies
     } catch (error) {
       console.error(error)
       return []
@@ -61,7 +68,17 @@ export class MovieModel {
         `SELECT BIN_TO_UUID(id) AS id, title, year, director, duration, poster, rate 
         FROM movie 
         WHERE id = UUID_TO_BIN(?)`, [id])
-      return rows[0]
+      const newMovies = await Promise.all(rows.map(async (row) => {
+        const [rowGenres] = await pool.query(
+              `select g.name from genre g
+              join movie_genres mg on g.id = mg.genre_id
+              join movie m on m.id = mg.movie_id
+              WHERE m.id = UUID_TO_BIN(?)`, [row.id])
+        const genres = rowGenres.map(g => g.name)
+        return { ...row, genre: genres }
+      }
+      ))
+      return newMovies[0]
     } catch (error) {
       console.error(error)
       return null
@@ -130,6 +147,11 @@ export class MovieModel {
           await pool.query('INSERT INTO movie_genres (movie_id, genre_id) VALUES (UUID_TO_BIN(?), ?)', [id, genId])
         })
       }
+    } catch (error) {
+      console.error('Cant update movie', error)
+      return null
+    }
+    try {
       const [movie] = await pool.query('SELECT BIN_TO_UUID(id) AS id, title, year, director, duration, poster, rate FROM movie WHERE id = UUID_TO_BIN(?)', [id])
       const [genres] = await pool.query(
         `select g.name from genre g 
@@ -139,7 +161,7 @@ export class MovieModel {
       movie[0].genre = genres.map(g => g.name)
       return movie[0]
     } catch (error) {
-      console.error('Cant update movie', error)
+      console.error('Return movie error: ', error)
       return null
     }
   }
