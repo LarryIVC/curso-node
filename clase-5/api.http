@@ -2,7 +2,7 @@
 
 ### single movie
 
-GET http://localhost:1234/api/v1/movies/0f899cdf-e6d8-11ee-a74c-bc5ff4400066
+GET http://localhost:1234/api/v1/movies/814cc872-e324-11ee-a74c-bc5ff4400066
 
 ###
 #  GET http://localhost:1234/movies/6a360a18-c645-4b47-9a7b-2a71babbf3e0
@@ -30,7 +30,7 @@ Content-Type: application/json
 }
 
 ### Update movie
-PATCH http://localhost:1234/api/v1/movies/0f899cdf-e6d8-11ee-a74c-bc5ff4400066
+PATCH http://localhost:1234/api/v1/movies/2eff697c-e8a6-11ee-a74c-bc5ff4400066
 Content-Type: application/json
 
 {
