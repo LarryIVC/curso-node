@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Larry Chat</title>
+  
+  <style>
+    *, *::before, *::after{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      color-scheme: dark light;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      padding: 36px;
+
+    }
+
+    #chat {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 400px;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #messages {
+      list-style: none;
+      padding: 12px;
+      overflow-y: auto;
+      height: calc(100% - 48px);
+      color: aliceblue;
+    }
+
+    #messages>li:nth-child(odd) {
+      background: #000;
+
+    }
+    #form {
+      bottom: 0;
+      left: 0 ;
+      right: 0;
+      position: absolute;
+      height: 48px;
+      display: flex;
+    }
+     
+    #input {
+      border-radius: 99999px;
+      border: 1px solid #ccc;
+      flex: 1;
+      padding: 0 10px;
+      margin: 4px;
+
+    }
+
+    #input:focus {
+      outline: none;
+    }
+
+    #form > button {
+      background: #09f;
+      color: white;
+      border: 0;
+      margin: 4px;
+      border-radius: 4px;
+      padding: 4px;
+    }
+  </style>
+  <script type="module" >
+    import { io } from "https://cdn.socket.io/4.7.5/socket.io.esm.min.js"
+    const socket = io()
+
+    const form = document.getElementById('form')
+    const input = document.getElementById('input')
+    const messages = document.getElementById('messages')
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      // console.log(input.value)
+      if (input.value) {
+        socket.emit('Chat message', input.value)
+        input.value = ''
+      }
+    })
+
+    socket.on('Chat message', (msg) => {
+      // console.log('entro al evento Chat message')
+      // const item = `<li>${msg}</li>`
+      const item = document.createElement('li')
+      item.innerHTML = msg
+      // messages.insertAdjacentElement('beforeend', item)
+      messages.appendChild(item)
+    })
+
+  </script>
+</head>
+<body>
+  <section id="chat">
+    <ul id="messages"></ul>
+    <form id="form">
+      <input type="text" id="input" name="message" placeholder="Escribe un mensaje" autocomplete="off">
+      <button type="submit">Enviar</button>
+    </form>
+  </section>
+  
+</body>
+</html>
