@@ -5,10 +5,10 @@ import { createServer } from 'node:http'
 import dotenv from 'dotenv'
 import { createClient } from '@libsql/client'
 
+dotenv.config()
 const PORT = process.env.PORT || 3000
 const app = express()
 const server = createServer(app)
-dotenv.config()
 
 const db = createClient({
   url: process.env.DB_URL,
