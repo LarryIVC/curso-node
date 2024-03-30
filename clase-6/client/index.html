@@ -38,7 +38,7 @@
 
     #messages {
       list-style: none;
-      padding: 12px;
+      padding: 0 8px ;
       overflow-y: auto;
       height: calc(100% - 48px);
       color: aliceblue;
@@ -46,8 +46,12 @@
 
     #messages>li:nth-child(odd) {
       background: #000;
-
     }
+
+    #messages>li>p {
+      color: #9cf;
+    }
+
     #form {
       bottom: 0;
       left: 0 ;
@@ -81,28 +85,59 @@
   </style>
   <script type="module" >
     import { io } from "https://cdn.socket.io/4.7.5/socket.io.esm.min.js"
-    const socket = io()
+
+    const getUsername = async () => {
+      const username = localStorage.getItem('username')
+      if (username) return username
+      
+      const result = await fetch('https://random-data-api.com/api/v2/users')
+      const { username: randomUsername } = await result.json()
+      
+      localStorage.setItem('username', randomUsername)
+      return randomUsername
+    }
+
+    const socket = io({
+      auth: {
+        username: await getUsername(),
+        serverOffset: 0
+      }
+    })
 
     const form = document.getElementById('form')
     const input = document.getElementById('input')
     const messages = document.getElementById('messages')
 
+    
+
     form.addEventListener('submit', (e) => {
+      console.log('entro al evento submit')
       e.preventDefault()
-      // console.log(input.value)
+      console.log(input.value)
       if (input.value) {
         socket.emit('Chat message', input.value)
         input.value = ''
       }
     })
 
-    socket.on('Chat message', (msg) => {
+    socket.on('Chat message', (msg, serverOffset, username) => {
       // console.log('entro al evento Chat message')
       // const item = `<li>${msg}</li>`
       const item = document.createElement('li')
       item.innerHTML = msg
       // messages.insertAdjacentElement('beforeend', item)
       messages.appendChild(item)
+      const paragraph = document.createElement('p')
+      // paragraph.textContent = username
+      const small = document.createElement('small')
+      small.textContent = username
+      paragraph.appendChild(small)
+
+      item.appendChild(paragraph)
+
+      socket.auth.serverOffset = serverOffset
+      // scroll al final de los mensajes
+      messages.scrollTop = messages.scrollHeight
     })
 
   </script>
